@@ -86,7 +86,7 @@ def get_neighbors(row_index, col_index, num_rows, num_cols):
 GRID = create_grid(20, 24, 25, 25, 2)  # Mode HARD
 press_button(BOARD_WIDTH / 2, BOARD_HEIGHT / 2, "left")
 
-for i in range(15):
+for i in range(25):
     time.sleep(1)
     # TODO This to be loop
     SCREENSHOT_IMG = read_image()
