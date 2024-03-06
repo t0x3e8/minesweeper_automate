@@ -1,11 +1,13 @@
 import numpy as np
 from PIL import Image
 import pytesseract
-import cv2
 
 GREEN_THRESHOLD = 1.1
 
 def create_grid(rows, cols, cell_width, cell_height, padding):
+    """
+    Create a default grid for the game grid.
+    """
     dtype = [
         ('region', 'i4', (4,)),
         ('padded_region', 'i4', (4,)),
@@ -52,12 +54,12 @@ def print_grid(grid: np.ndarray) -> None:
             row_string += str(cell['symbol']) + ' '
         print(row_string)
 
-
 def is_green(region_cell) -> bool:
     """
     Checks if a pixel is green based on a threshold.
     """
     region_array = np.array(region_cell)
+     # Reshape to a 2D array of pixels
     pixels = region_array.reshape(-1, 3)
     unique_pixels, counts = np.unique(pixels, axis=0, return_counts=True)
     unique_pixels_count_dict = {tuple(pixel): count for pixel, count in zip(unique_pixels, counts)}
@@ -70,24 +72,24 @@ def update_grid(grid: np.ndarray, screenshot_img: Image) -> None:
     """
     Updates the game grid based on the current screenshot.
     """
+    
     num_rows, num_cols = grid.shape
     for row_index in range(num_rows):
         for col_index in range(num_cols):
+            
             cell = grid[row_index, col_index]
 
             if cell['symbol'] == 'G':
                 region = cell['padded_region']
                 region_tuple = (region[0], region[2], region[1], region[3])
                 cell_image = screenshot_img.crop(region_tuple)
-                # cell_image.save(f"{row_index}-{col_index}.png")
-                
                 ocr_text = OCR_image(cell_image)
+                
                 if ocr_text:
                     try:
                         num = int(ocr_text[0])
                         cell['symbol'] = num
-                        # region_cell.save(f"{row_index}-{col_index}.png")
-                        # print(f"OCR result for cell [{row_index}, {col_index}]: {num}")
+                        # cell_image.save(f"{row_index}-{col_index}.png")
                     except ValueError:
                         pass
                 elif is_green(cell_image):
@@ -95,13 +97,21 @@ def update_grid(grid: np.ndarray, screenshot_img: Image) -> None:
                 else:
                     cell['symbol'] = 'X'
 
-def OCR_image(cell_image): 
+def OCR_image(cell_image):
+    """
+    Performs OCR on a cell image to extract text.
+    """
     gray_cell = cell_image.convert("L")
     gray_image_np = np.array(gray_cell)
-    _, binary_image = cv2.threshold(gray_image_np, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    binary_image_pil = Image.fromarray(binary_image)
+    binary_image_pil = Image.fromarray(gray_image_np)
+    
+    # Check if the image contains only one unique pixel value - improves performance significantly.
+    # If the image has only one color, it cannot contain text, so OCR is not required.
+    pixels = list(binary_image_pil.getdata())
+    unique_pixels = set(pixels)
+    if len(unique_pixels) == 1:
+        return ''
+    
     custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=123456789'
     ocr_text = pytesseract.image_to_string(binary_image_pil, config=custom_config).split()
-
-    return ocr_text
-                
+    return ocr_text               
