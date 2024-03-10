@@ -42,6 +42,18 @@ def create_grid(rows, cols, cell_width, cell_height, padding):
 
     return grid
 
+def find_cells_with_symbol(grid, symbol):
+    """
+    Find all cells with a given symbol in the grid.
+    """
+    cells_with_symbol = []
+    rows, cols = grid.shape
+    for row_index in range(rows):
+        for col_index in range(cols):
+            if grid[row_index, col_index]['symbol'] == symbol:
+                cells_with_symbol.append((row_index, col_index))
+    return cells_with_symbol
+
 def print_grid(grid: np.ndarray) -> None:
     """
     Print the game grid based on the current screenshot.
