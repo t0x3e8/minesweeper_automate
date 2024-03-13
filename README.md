@@ -1,7 +1,7 @@
 Minesweeper Bot
 This Python script provides a Minesweeper bot capable of automatically playing the game. It utilizes image processing techniques and OCR to analyze the game board and make intelligent decisions about where to click next.
 
-[![IMAGE ALT TEXT HERE](https://youtu.be/COpXQbb-Ez4?si=uQ0y0mRxKJ43Mfvd/0.jpg)](https://youtu.be/COpXQbb-Ez4)
+[![Link to demo on youtube](https://i3.ytimg.com/vi/COpXQbb-Ez4/maxresdefault.jpg))](https://youtu.be/COpXQbb-Ez4)
 
 Dependencies
 Make sure you have the following dependencies installed:
